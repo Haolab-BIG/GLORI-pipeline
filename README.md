@@ -99,6 +99,19 @@ This pipeline provides a fully containerized Singularity environment that bundle
       ```bash
       mkdir anno_data
       cd anno_data
-      # Download Genome FASTA and GTF
+      
+      # 1. download files for annotation (required, using hg38 as example): 
+      wget https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/109.20190905/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_assembly_report.txt 
+      wget https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/109.20190905/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.gtf.gz
+      
+      # 2. download reference genome and transcriptome
+      wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
+      wget https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/109.20190905/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_rna.fna.gz
+
+      # Unzip the files
+      gunzip GCF_000001405.39_GRCh38.p13_genomic.gtf.gz
+      gunzip hg38.fa.gz
+      gunzip GCF_000001405.39_GRCh38.p13_rna.fna.gz
+      ```
 
       
