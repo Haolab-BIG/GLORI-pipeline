@@ -147,6 +147,16 @@ This pipeline provides a fully containerized Singularity environment that bundle
        sample_info: "/project_directory/sample_info.txt"  # Path to sample information file
        sif: "/project_directory/newGLORI.sif"  # Singularity image path
        threads: 20  # General number of threads (for downloading, index building, etc.)      
+		   trim_galore_first:
+           quality: 20        
+           stringency: 1      
+           error_rate: 0.3    
+           min_length: 35  
+
+       trim_galore_second:
+           clip_r1: 10
+           quality: 20
+           min_length: 25
         ```
 
      * **Step 2: run snakemake**
