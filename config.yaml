@@ -1,0 +1,24 @@
+# --------------------------
+# 基础配置（根据实际环境修改）
+# --------------------------
+tool_dir: "/mnt/guanli/lyc.GLORI.singularity"  # 工具根目录（含get_anno/、pipelines/、newrun_GLORI.py）
+input_dir: "/mnt/guanli/lyc.GLORI.singularity/test_smk"  # 原始Fastq所在目录
+output_root: "/mnt/guanli/lyc.GLORI.singularity/test_smk/output"  # 所有输出文件的根目录
+sample_info: "sample_info.txt"  # 样本信息文件路径
+reference_dir: "/mnt/guanli/lyc.GLORI.singularity/test_smk/ref"
+# --------------------------
+# 容器配置
+# --------------------------
+sif: "/mnt/guanli/lyc.GLORI.singularity/newGLORI.sif"  # Singularity镜像路径
+threads: 20  # 通用线程数（下载、索引构建等）
+
+trim_galore_first:
+  quality: 20          # -q 参数：质量阈值
+  stringency: 1        # --stringency 参数：接头匹配严格度
+  error_rate: 0.3      # -e 参数：允许的错误率
+  min_length: 35       # --length 参数：最小序列长度
+
+trim_galore_second:
+  clip_r1: 10
+  quality: 20
+  min_length: 25

@@ -1,0 +1,2 @@
+Sample_prefix	Fastq_path
+SRR21356251_100k	/mnt/guanli/lyc.GLORI.singularity/SRR21356251_100k.fastq
