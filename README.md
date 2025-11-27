@@ -85,20 +85,19 @@ This pipeline provides a fully containerized Singularity environment that bundle
         singularity -h
         ```
 
-3.  **Download Files**:
+3.  **snakemake**: Snakemake must be installed on your system and requires a Python 3 distribution.
 
-      * `run_GLORI.sh`
-      * `newGLORI.sif` (The Singularity container)
-      * `get_anno/*.py`
-      * `pipelines/*.py`
-      * `run_GLORI.py`
+      ```bash
+      pip install snakemake
+      ```
+
 
 4.  **Reference Data**:
         Generate annotation files (required).
         A directory containing bowtie/STAR index (Below are the detailed steps for the human hg38 genome. For other reference genomes, please download the corresponding files and replace them as needed).
       ```bash
-      mkdir anno_data
-      cd anno_data
+      mkdir anno_files
+      cd anno_files
       
       # 1. download files for annotation (required, using hg38 as example): 
       wget https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/109.20190905/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_assembly_report.txt 
@@ -114,4 +113,98 @@ This pipeline provides a fully containerized Singularity environment that bundle
       gunzip GCF_000001405.39_GRCh38.p13_rna.fna.gz
       ```
 
+5.   **Required File Structure**
+
+      ```bash
+      project_directory/
+      ├── Scripts
+            ├── config.yaml
+            └── GLORI.smk
+      ├── Containers/
+            └── newGLORI.sif
+      ├── anno_files/
+            ├── GCF_000001405.39_GRCh38.p13_genomic.gtf
+            ├── GCF_000001405.39_GRCh38.p13_rna.fna
+            └── hg38.fa
+      ```
       
+      - **GLORI.smk** — The main Snakemake workflow script.  
+      - **config.yaml** — Configuration file containing paths, parameters, and sample information.  
+        ⚠️ Must be located in the same directory as `GLORI.smk`.
+      - **newGLORI.sif** — Singularity container image with all required software and dependencies pre-installed.
+      - **anno_files** — Reference genome and transcriptome; replace with your preferred reference.
+      
+# Part III Running
+
+   * **Example code for ChIP-seq (Histomodification)**
+
+      * **Step 1: Edit `config.yaml`**
+
+        ```bash
+       tool_dir: "/project_directory"  # Tool root directory
+       input_dir: "/project_directory"  # Directory where raw Fastq files are located
+       output_root: "/project_directory/output"  # Root directory for all output files
+       sample_info: "/project_directory/sample_info.txt"  # Path to sample information file
+       sif: "/project_directory/newGLORI.sif"  # Singularity image path
+       threads: 20  # General number of threads (for downloading, index building, etc.)      
+        ```
+
+     * **Step 2: run snakemake**
+
+        ```bash
+        snakemake -s GLORI_v4.smk \
+        --use-singularity \
+        --cores 8 \
+        --singularity-args "--cleanenv --bind /project_directory:/project_directory" 
+        ```
+
+# Part IV Output
+
+   * **Output Structure**
+      ```bash
+      output/
+      ├──test_dir /
+	     #SRR21356251_100k.fq.gz is test rawdata
+	       ├──SRR21356251_100k_dup.fq.gz
+         ├──SRR21356251_100k.fastq.gz_trimming_report.txt
+         ├──SRR21356251_100k_rmdup.fq.gz
+         ├──SRR21356251_100k_rmdup.fq.gz_trimming_report.txt
+         ├──SRR21356251_100k_rmdup_trimmed.fastq
+         ├──SRR21356251_100k_rmdup_trimmed_fastqc.html
+         ├──SRR21356251_100k_rmdup_trimmed_fastqc.zip
+         ├──SRR21356251_100k_rmdup_trimmed.fq.gz
+         ├──SRR21356251_100k_trimmed_fastqc.html
+         ├──SRR21356251_100k_trimmed_fastqc.zip
+         └──SRR21356251_100k_trimmed.fq.gz
+      ├──anno_files /
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.genelist
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.genelist2
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.tbl
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.tbl2
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.tbl2.baseanno
+         ├──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.tbl2.baseanno.sorted
+         └──GCF_000001405.39_GRCh38.p13_genomic.gtf_change2Ens.tbl2.noredundance.base
+      ├──new_annotated_Acites_output /
+         ├──mapping-info/
+         ├──testGLORI_prefix_A.bed_sorted
+         ├──testGLORI_prefix_AGchanged_2.fq
+         ├──testGLORI_prefix_merged.sorted.bam
+         ├──testGLORI_prefix_merged.sorted.bam.bai
+         ├──testGLORI_prefix.totalCR.txt
+         └──testGLORI_prefix.totalformat.txt
+
+        ```
+    * **Output Interpretation**
+      #new_annotated_Acites_output
+      | Output files | Interpretation | 
+      | :---: | :---: |
+      | ${your_prefix}_merged.sorted.bam | The overall mapping of reads in .bam format |
+      | ${your_prefix}.totalCR.txt | The text file containing the median value of the overall A-to-G conversion rate for each transcriptome and gene |
+      | ${your_prefix}_A.bed_sorted | The m6A sites bed |
+
+
+# Pipeline Reference
+
+This pipeline is implemented with reference to the **GLORI-tools** methodology:
+- **GLORI-tools**:https://github.com/liucongcas/GLORI-tools/
