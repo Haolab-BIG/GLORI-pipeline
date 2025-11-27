@@ -152,7 +152,7 @@ This pipeline provides a fully containerized Singularity environment that bundle
      * **Step 2: run snakemake**
 
         ```bash
-        snakemake -s GLORI_v4.smk \
+        snakemake -s GLORI.smk \
         --use-singularity \
         --cores 8 \
         --singularity-args "--cleanenv --bind /project_directory:/project_directory" 
