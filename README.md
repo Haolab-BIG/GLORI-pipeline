@@ -140,7 +140,7 @@ This pipeline provides a fully containerized Singularity environment that bundle
 
       * **Step 1: Edit `config.yaml`**
 
-        ```bash
+       ```bash
        tool_dir: "/project_directory"  # Tool root directory
        input_dir: "/project_directory"  # Directory where raw Fastq files are located
        output_root: "/project_directory/output"  # Root directory for all output files
@@ -152,12 +152,11 @@ This pipeline provides a fully containerized Singularity environment that bundle
            stringency: 1      
            error_rate: 0.3    
            min_length: 35  
-
        trim_galore_second:
            clip_r1: 10
            quality: 20
            min_length: 25
-        ```
+       ```
 
      * **Step 2: run snakemake**
 
